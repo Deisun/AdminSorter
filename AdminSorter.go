@@ -1,3 +1,5 @@
+// Author:  Rob Douma
+
 package main
 
 import (
@@ -8,11 +10,11 @@ import (
 
 func main() {
 
-  init()
+  initialize()
 
 }
 
-func init() {
+func initialize() {
   // check to see if config file exists
   if _, err := os.Stat("config.ini"); os.IsNotExist(err) {
     fmt.Println("file does not exist")
