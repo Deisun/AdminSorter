@@ -14,19 +14,13 @@ import (
 	"sync"
 )
 
-/*var destinationPath string = "c:\\temp1\\Eworkz"
-var sourcePath string = "c:\\temp1\\ToSort"*/
+//var destinationPath string = "c:\\temp1\\Eworkz"
+//var sourcePath string = "c:\\temp1\\ToSort"
 
 var sourcePath, err = os.Getwd()
 var destinationPath string = "\\\\usatfs01\\Eworksheets"
 
 func main() {
-
-	Run()
-
-}
-
-func Run() {
 	// get a list of all the files in the dir
 	fileList := GetFiles()
 	// create a list of only filenames that are integers above 1,000,000.
