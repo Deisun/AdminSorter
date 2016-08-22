@@ -16,11 +16,11 @@ import (
 
 //test
 
-var destinationPath string = "c:\\temp1\\Eworkz"
-var sourcePath string = "c:\\temp1\\ToSort"
+//var destinationPath string = "c:\\temp1\\Eworkz"
+//var sourcePath string = "c:\\temp1\\ToSort"
 
-//var sourcePath, err = os.Getwd()
-//var destinationPath string = "\\\\usatfs01\\Eworksheets"
+var sourcePath, err = os.Getwd()
+var destinationPath string = "\\\\usatfs01\\Eworksheets"
 
 func main() {
 	// get a list of all the files in the dir
