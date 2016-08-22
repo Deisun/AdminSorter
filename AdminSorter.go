@@ -14,6 +14,8 @@ import (
 	"sync"
 )
 
+//test
+
 //var destinationPath string = "c:\\temp1\\Eworkz"
 //var sourcePath string = "c:\\temp1\\ToSort"
 
