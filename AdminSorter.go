@@ -1,5 +1,6 @@
 // Author:  Rob Douma
-// Description: This program will monitor a folder for worksheet files and automatically sort them into Eworksheets folders
+// Description: This program moves all worksheet files into Eworksheets shared folders using the existing folder naming scheme.
+//				If the folder does not exist, it will automatically create a folder according to the worksheets name
 
 package main
 
@@ -14,91 +15,87 @@ import (
 	"sync"
 )
 
-//var destinationPath string = "c:\\temp1\\Eworkz"
-//var sourcePath string = "c:\\temp1\\ToSort"
-
-var sourcePath, err = os.Getwd()
-var destinationPath string = "\\\\usatfs01\\Eworksheets"
-
-func main() {
-	// get a list of all the files in the dir
-	fileList := GetFiles()
-	// create a list of only filenames that are integers above 1,000,000.
-	// this is done because there are some funky foldernames for worksheets under that value
-	worksheetList := ExtractValidWorksheets(fileList)
-
-	GenerateDirs(worksheetList)
-	MoveWorksheets(worksheetList)
-
+type Worksheet struct {
+	destinationFolder string
+	name              string
+	value             int
 }
 
-func GetFiles() []string {
-	// get a list of all files in the Dir
+var destinationPath string = "e:\\temp\\Eworkz"
+var sourcePath, err = os.Getwd()
+
+var worksheets = []*Worksheet{}
+
+func main() {
+	GetWorksheets()
+	GenerateDirs()
+	MoveWorksheets()
+	// PrintWorksheets()
+}
+
+func GetWorksheets() {
+
 	files, err := ioutil.ReadDir(sourcePath)
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// create a dynamic slice of filenames
-	fileList := make([]string, 0)
-
 	for _, file := range files {
-		name := file.Name()
 
-		fileList = append(fileList, name)
-	}
+		if IsPDF(file) && IsNumber(file) {
 
-	return fileList
-}
-
-func ExtractValidWorksheets(fileList []string) []string {
-	worksheetList := make([]string, 0)
-
-	for _, file := range fileList {
-		// remove the last 4 characters to remove .ext
-		fileTrimmed := strings.TrimSuffix(file, ".pdf")
-
-		// check to see if integer in filename
-		if _, err := strconv.Atoi(fileTrimmed); err == nil {
-			i, err := strconv.Atoi(fileTrimmed)
-
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			if i >= 700001 {
-				worksheetList = append(worksheetList, file)
-			}
+			AppendToWorksheets(file)
 		}
 	}
-
-	return worksheetList
 }
 
-// creates the directory folders if they don't exist
-func GenerateDirs(worksheetList []string) {
+func IsPDF(file os.FileInfo) bool {
+	buf, _ := ioutil.ReadFile(file.Name())
 
-	for _, worksheet := range worksheetList {
-		// remove the last 4 characters to remove .ext
-		worksheetInt := ConvertWorksheetStringToInt(worksheet)
-
-		worksheetFolderName := GetWorksheetsFolderName(worksheetInt)
-		worksheetFullPath := destinationPath + "\\" + worksheetFolderName
-
-		if _, err := os.Stat(worksheetFullPath); err == nil {
-			// do nothing, path already exists
-		} else {
-
-			err := os.Mkdir(worksheetFullPath, 0777)
-
-			if err != nil {
-				log.Fatal(err)
-			} else {
-				fmt.Println("Creating folder: " + "\"" + worksheetFolderName + "\"")
-			}
-		}
+	if len(buf) > 3 &&
+		buf[0] == 0x25 &&
+		buf[1] == 0x50 && // these correspond to PDF "magic numbers" header info
+		buf[2] == 0x44 &&
+		buf[3] == 0x46 {
+		return true
 	}
+
+	return false
+}
+
+func IsNumber(file os.FileInfo) bool {
+	filenameNoExtension := strings.TrimSuffix(file.Name(), ".pdf")
+
+	_, err := strconv.Atoi(filenameNoExtension)
+
+	if err != nil {
+		return false
+	}
+
+	return true
+}
+
+func AppendToWorksheets(file os.FileInfo) {
+	worksheet := new(Worksheet)
+
+	worksheet.name = file.Name()
+	worksheet.value = GetFileIntValue(file)
+	worksheet.destinationFolder = GetDestinationFolderName(worksheet.value)
+
+	worksheets = append(worksheets, worksheet)
+}
+
+func GetFileIntValue(file os.FileInfo) int {
+	filenameNoExtension := strings.TrimSuffix(file.Name(), ".pdf")
+
+	value, err := strconv.Atoi(filenameNoExtension)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return value
 }
 
 // GetEworksheetsFolder returns a folder name based off the filename of a worksheet.
@@ -111,7 +108,7 @@ func GenerateDirs(worksheetList []string) {
 // Ignoring the decimals allows us to then multiply by 500 and add 1 to get the first number of the folder
 // Example:  1035529 / 500 = 2071.058, but since we're diving integers we only get 2071
 // then multiplying by 500 and adding 1 gives us 1035501
-func GetWorksheetsFolderName(worksheetNum int) string {
+func GetDestinationFolderName(worksheetNum int) string {
 
 	if worksheetNum%500 == 0 {
 		worksheetNum -= 1
@@ -125,29 +122,43 @@ func GetWorksheetsFolderName(worksheetNum int) string {
 	return folderName
 }
 
-func ConvertWorksheetStringToInt(worksheet string) int {
-	worksheetTrimmed := strings.TrimSuffix(worksheet, ".pdf")
+func GenerateDirs() {
 
-	i, err := strconv.Atoi(worksheetTrimmed)
+	for _, worksheet := range worksheets {
 
-	if err != nil {
-		log.Fatal(err)
+		worksheetFullPath := destinationPath + "\\" + worksheet.destinationFolder
+
+		if _, err := os.Stat(worksheetFullPath); err == nil {
+			// do nothing, path already exists
+		} else {
+
+			err := os.Mkdir(worksheetFullPath, 0777)
+
+			if err != nil {
+				log.Fatal(err)
+			} else {
+				fmt.Println("Creating folder: " + "\"" + worksheet.destinationFolder + "\"")
+			}
+		}
 	}
-	return i
 }
 
-func MoveWorksheets(worksheetList []string) {
+// func PrintWorksheets() {
+// 	for _, worksheet := range worksheets {
+// 		fmt.Print("dst: ", worksheet.destinationFolder, "\tname: ", worksheet.name, "\tvalue: ", worksheet.value, "\n")
+// 	}
+// }
+
+func MoveWorksheets() {
 
 	var wg sync.WaitGroup
 
-	for _, worksheet := range worksheetList {
+	for _, worksheet := range worksheets {
 
 		wg.Add(1)
 
-		worksheetInt := ConvertWorksheetStringToInt(worksheet)
-
-		src := sourcePath + "\\" + worksheet
-		dst := destinationPath + "\\" + GetWorksheetsFolderName(worksheetInt) + "\\" + worksheet
+		src := sourcePath + "\\" + worksheet.name
+		dst := destinationPath + "\\" + worksheet.destinationFolder + "\\" + worksheet.name
 
 		go func() {
 			err := CopyFile(src, dst)
@@ -155,7 +166,7 @@ func MoveWorksheets(worksheetList []string) {
 			if err != nil {
 				log.Fatal(err)
 			} else {
-				fmt.Println("Moving:\t" + "\"" + worksheet + "\" to:\t" + "\"" + dst + "\"")
+				fmt.Println("Moving:\t" + "\"" + worksheet.name + "\" to:\t" + "\"" + dst + "\"")
 
 				rerr := os.Remove(src)
 
