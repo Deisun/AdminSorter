@@ -21,7 +21,8 @@ type Worksheet struct {
 	value             int
 }
 
-var destinationPath string = "e:\\temp\\Eworkz"
+// var destinationPath string = "c:\\temp1\\Eworkz"
+var destinationPath string = "\\\\usatfs01\\Eworksheets"
 var sourcePath, err = os.Getwd()
 
 var worksheets = []*Worksheet{}
@@ -137,7 +138,7 @@ func GenerateDirs() {
 			if err != nil {
 				log.Fatal(err)
 			} else {
-				fmt.Println("Creating folder: " + "\"" + worksheet.destinationFolder + "\"")
+				fmt.Println("Folder does not exist.  Creating folder: " + "\"" + worksheetFullPath + "\"")
 			}
 		}
 	}
@@ -166,7 +167,7 @@ func MoveWorksheets() {
 			if err != nil {
 				log.Fatal(err)
 			} else {
-				fmt.Println("Moving:\t" + "\"" + worksheet.name + "\" to:\t" + "\"" + dst + "\"")
+				fmt.Println("Moving: " + src + " to: " + "\"" + dst + "\"")
 
 				rerr := os.Remove(src)
 
