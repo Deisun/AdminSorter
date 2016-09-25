@@ -54,7 +54,7 @@ func GetWorksheets() {
 func IsPDF(file os.FileInfo) bool {
 	buf, _ := ioutil.ReadFile(file.Name())
 
-	if len(buf) > 3 && // these correspond to PDF "magic numbers" header info
+	if len(buf) > 3 && // these correspond to PDF "magic numbers" header bytes for %PDF
 		buf[0] == 0x25 && // hex: %
 		buf[1] == 0x50 && // hex: P
 		buf[2] == 0x44 && // hex: D
