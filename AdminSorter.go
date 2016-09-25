@@ -54,11 +54,11 @@ func GetWorksheets() {
 func IsPDF(file os.FileInfo) bool {
 	buf, _ := ioutil.ReadFile(file.Name())
 
-	if len(buf) > 3 &&
-		buf[0] == 0x25 &&
-		buf[1] == 0x50 && // these correspond to PDF "magic numbers" header info
-		buf[2] == 0x44 &&
-		buf[3] == 0x46 {
+	if len(buf) > 3 && // these correspond to PDF "magic numbers" header info
+		buf[0] == 0x25 && // hex: %
+		buf[1] == 0x50 && // hex: P
+		buf[2] == 0x44 && // hex: D
+		buf[3] == 0x46 { // hex: F
 		return true
 	}
 
