@@ -1,6 +1,10 @@
 // Author:  Rob Douma
-// Description: This program moves all worksheet files into Eworksheets shared folders using the existing folder naming scheme.
-//				If the folder does not exist, it will automatically create a folder according to the worksheets name
+// Date:	March 25th, 2016
+//
+// Description:
+//
+//		This program moves all worksheet files into Eworksheets shared folders using the existing folder naming scheme.
+//		If the folder does not exist, it will automatically create a folder according to the worksheets name
 
 package main
 
