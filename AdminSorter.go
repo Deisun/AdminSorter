@@ -3,8 +3,8 @@
 //
 // Description:
 //
-//This program moves all worksheet files into Eworksheets shared folders using the existing folder naming scheme.
-//If the folder does not exist, it will automatically create a folder according to the worksheets name
+// This program moves all worksheet files into Eworksheets shared folders using the existing folder naming scheme.
+// If the folder does not exist, it will automatically create a folder according to the worksheets name
 
 package main
 
@@ -25,7 +25,6 @@ type Worksheet struct {
 	value             int
 }
 
-// var destinationPath string = "c:\\temp1\\Eworkz"
 var destinationPath string = "\\\\usatfs01\\Eworksheets"
 var sourcePath, err = os.Getwd()
 
@@ -35,9 +34,10 @@ func main() {
 	GetWorksheets()
 	GenerateDirs()
 	MoveWorksheets()
-	// PrintWorksheets()
 }
 
+// GetWorksheets() will get all files in a directory.
+// If it's a PDF and an integer number, we add it to the Worksheet array
 func GetWorksheets() {
 
 	files, err := ioutil.ReadDir(sourcePath)
@@ -55,6 +55,7 @@ func GetWorksheets() {
 	}
 }
 
+// IsPDF checks to see if a file is of the type *.PDF
 func IsPDF(file os.FileInfo) bool {
 	buf, _ := ioutil.ReadFile(file.Name())
 
@@ -69,7 +70,9 @@ func IsPDF(file os.FileInfo) bool {
 	return false
 }
 
+// IsNumber checks to see if the filename is an integer
 func IsNumber(file os.FileInfo) bool {
+	// need to first trim the extension off
 	filenameNoExtension := strings.TrimSuffix(file.Name(), ".pdf")
 
 	_, err := strconv.Atoi(filenameNoExtension)
@@ -81,6 +84,7 @@ func IsNumber(file os.FileInfo) bool {
 	return true
 }
 
+// AppendToWorksheets will take the file and append it to the Worksheets slice
 func AppendToWorksheets(file os.FileInfo) {
 	worksheet := new(Worksheet)
 
@@ -91,6 +95,7 @@ func AppendToWorksheets(file os.FileInfo) {
 	worksheets = append(worksheets, worksheet)
 }
 
+// Gets the Integer value of a filename
 func GetFileIntValue(file os.FileInfo) int {
 	filenameNoExtension := strings.TrimSuffix(file.Name(), ".pdf")
 
@@ -127,6 +132,7 @@ func GetDestinationFolderName(worksheetNum int) string {
 	return folderName
 }
 
+// GenerateDirs() checks to see if the path already exists, if not it creates the dir
 func GenerateDirs() {
 
 	for _, worksheet := range worksheets {
@@ -148,12 +154,7 @@ func GenerateDirs() {
 	}
 }
 
-// func PrintWorksheets() {
-// 	for _, worksheet := range worksheets {
-// 		fmt.Print("dst: ", worksheet.destinationFolder, "\tname: ", worksheet.name, "\tvalue: ", worksheet.value, "\n")
-// 	}
-// }
-
+// MoveWorksheets() moves the worksheet to the organized foldername structure usedful for the Administrative group
 func MoveWorksheets() {
 
 	var wg sync.WaitGroup
