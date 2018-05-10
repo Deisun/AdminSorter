@@ -5,9 +5,10 @@ exist for this range, then it's automatically created.
 
 ## Details
 A pre-defined folder with subfolders using the syntax:
+'''
 100-500
 501-1000
 1001-1500
+'''
 etc...
 
-If the 
