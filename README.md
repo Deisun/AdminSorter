@@ -1,10 +1,15 @@
 # AdminSorter
-This tool is specifically designed to automate scanning large volumes of PDF's to a pre-organized directory tree.
-Based on the barcode in the image, the filename is automatically named according to the below convention.  If the subfolder does not
-exist for this range, then it's automatically created.
+This tool is designed to monitor and automate organization of large volumes of scanned PDF documents.
+Filenames are automatically named using barcode recognition.  They are then sorted in to subfolders according to filename.  If the subfolder does not exist, then it's automatically created.
 
 ## Details
-A pre-defined folder with subfolders using the syntax:
+Syntax for filenames:
+```
+1.pdf
+2.pdf
+3.pdf
+...
+```
 
 Subfolder names:
 ```
