@@ -13,9 +13,10 @@ Syntax for filenames:
 
 Subfolder names:
 ```
-100-500
+0-500
 501-1000
 1001-1500
+...
 ```
 Scanned filenames with 1.pdf, 2.pdf, etc... automatically get moved to the subfolder "100-500".
 Scanned filenames with 501.pdf, 502.pdf, etc... automatically get filed in the subfolder "501-1000".
