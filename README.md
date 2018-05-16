@@ -1,4 +1,4 @@
-# AdminSorter
+# SortFiles
 This tool is designed to monitor and automate organization of large volumes of scanned PDF documents.
 Filenames are automatically named using barcode recognition.  They are then sorted in to subfolders according to filename.  If the subfolder does not exist, then it's automatically created.
 
